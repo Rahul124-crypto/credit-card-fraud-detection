@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 
-# Global variables to store model and scaler
+
 model = None
 scaler = None
 
@@ -87,7 +87,7 @@ def predict_fraud(features):
     probability = model.predict_proba(features_scaled)[0]
     
     
-    fraud_probability = probability[1]  # Probability of fraud
+    fraud_probability = probability[1] 
     confidence = max(probability) * 100
     
     return {
@@ -112,7 +112,7 @@ def predict():
     Displays the form for user input.
     """
     if request.method == 'POST':
-        # Get JSON data from request
+        
         data = request.get_json()
         
         
