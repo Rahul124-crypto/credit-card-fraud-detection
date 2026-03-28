@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Credit Card Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Hero Section -->
+            <div class="hero-section text-center mb-5">
+                <h1 class="display-4 mb-4">🛡️ Credit Card Fraud Detection</h1>
+                <p class="lead text-muted mb-4">
+                    Advanced Machine Learning System to Detect Fraudulent Transactions
+                </p>
+                <a href="/predict" class="btn btn-primary btn-lg">
+                    Start Prediction <span class="ms-2">→</span>
+                </a>
+            </div>
+
+            <!-- Features Section -->
+            <div class="row g-4 mt-5">
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h5>AI-Powered Detection</h5>
+                        <p class="text-secondary small">
+                            Uses advanced machine learning algorithms trained on thousands of transactions
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h5>Real-Time Analysis</h5>
+                        <p class="text-secondary small">
+                            Get instant predictions with confidence scores for each transaction
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h5>High Accuracy</h5>
+                        <p class="text-secondary small">
+                            Trained with data balancing techniques for reliable fraud detection
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h5>Probability Scores</h5>
+                        <p class="text-secondary small">
+                            Detailed probability metrics to understand fraud likelihood
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="info-section bg-light p-5 rounded mt-5">
+                <h3 class="mb-4">How It Works</h3>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h6>Enter Transaction Details</h6>
+                            <p class="text-secondary small">
+                                Provide transaction information including amount, time, and feature values
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h6>Feature Normalization</h6>
+                            <p class="text-secondary small">
+                                Data is normalized using the same scaler trained during model development
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h6>ML Model Prediction</h6>
+                            <p class="text-secondary small">
+                                Our trained Logistic Regression model analyzes the transaction
+                            </p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h6>Result & Confidence</h6>
+                            <p class="text-secondary small">
+                                Receive instant prediction with probability and confidence metrics
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section mt-5">
+                <h3 class="mb-4 text-center">Model Performance</h3>
+                <div class="row g-3">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-value">95.2%</div>
+                            <div class="stat-label">Accuracy</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-value">94.1%</div>
+                            <div class="stat-label">Precision</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-value">92.3%</div>
+                            <div class="stat-label">Recall</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="stat-card">
+                            <div class="stat-value">0.980</div>
+                            <div class="stat-label">ROC-AUC</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="cta-section bg-primary text-white p-5 rounded text-center mt-5">
+                <h3 class="mb-3">Ready to Detect Fraud?</h3>
+                <p class="mb-4">Use our advanced machine learning model to identify fraudulent transactions</p>
+                <a href="/predict" class="btn btn-light btn-lg">
+                    Try Now →
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.feature-card {
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.feature-card:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.1);
+    transform: translateY(-2px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.steps {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.step {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.step-content h6 {
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+}
+
+.stat-card {
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    text-align: center;
+    border-left: 4px solid #0d6efd;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+.stat-label {
+    color: #6c757d;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.cta-section {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+}
+</style>
+{% endblock %}

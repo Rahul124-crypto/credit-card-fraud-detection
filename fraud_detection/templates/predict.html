@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block title %}Predict - Credit Card Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h2 class="mb-4">Transaction Fraud Detection</h2>
+            
+            <!-- Form Section -->
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form id="predictionForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="time" class="form-label">
+                                    Time (Hours since first transaction)
+                                    <small class="text-secondary">(0-48)</small>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    class="form-control" 
+                                    id="time" 
+                                    name="time" 
+                                    min="0" 
+                                    max="48" 
+                                    step="0.1"
+                                    placeholder="e.g., 10" 
+                                    required
+                                >
+                                <small class="text-secondary">Typical: 5-20 hours</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">
+                                    Transaction Amount ($)
+                                    <small class="text-secondary">(≥ 0)</small>
+                                </label>
+                                <input 
+                                    type="number" 
+                                    class="form-control" 
+                                    id="amount" 
+                                    name="amount" 
+                                    min="0" 
+                                    step="0.01"
+                                    placeholder="e.g., 50" 
+                                    required
+                                >
+                                <small class="text-secondary">Legitimate range: $10-500</small>
+                            </div>
+                        </div>
+
+                        <!-- Feature Values -->
+                        <div class="card bg-light mb-3">
+                            <div class="card-header bg-white">
+                                <h6 class="mb-0">Transaction Features (V1-V6)</h6>
+                                <small class="text-secondary">
+                                    These are anonymized PCA components from the original dataset
+                                </small>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="v1" class="form-label">V1</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            id="v1" 
+                                            name="v1" 
+                                            step="0.1"
+                                            placeholder="0.0" 
+                                            required
+                                        >
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="v2" class="form-label">V2</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            id="v2" 
+                                            name="v2" 
+                                            step="0.1"
+                                            placeholder="0.0" 
+                                            required
+                                        >
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="v3" class="form-label">V3</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            id="v3" 
+                                            name="v3" 
+                                            step="0.1"
+                                            placeholder="0.0" 
+                                            required
+                                        >
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="v4" class="form-label">V4</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            id="v4" 
+                                            name="v4" 
+                                            step="0.1"
+                                            placeholder="0.0" 
+                                            required
+                                        >
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="v5" class="form-label">V5</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            id="v5" 
+                                            name="v5" 
+                                            step="0.1"
+                                            placeholder="0.0" 
+                                            required
+                                        >
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="v6" class="form-label">V6</label>
+                                        <input 
+                                            type="number" 
+                                            class="form-control" 
+                                            id="v6" 
+                                            name="v6" 
+                                            step="0.1"
+                                            placeholder="0.0" 
+                                            required
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                <span id="submitText">Predict Fraud</span>
+                                <span id="spinner" class="spinner-border spinner-border-sm ms-2" style="display: none;"></span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="sampleBtn">
+                                Load Sample
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary">
+                                Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" style="display: none;" class="mt-4">
+                <div id="resultCard" class="card shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4">Prediction Result</h4>
+                        
+                        <!-- Prediction Display -->
+                        <div id="predictionDisplay" class="mb-4"></div>
+
+                        <!-- Charts -->
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h6 class="mb-3">Fraud Probability</h6>
+                                    <canvas id="probabilityChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <h6 class="mb-3">Prediction Confidence</h6>
+                                    <canvas id="confidenceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Details -->
+                        <div class="mt-4 pt-4 border-top">
+                            <h6 class="mb-3">Details</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <span class="label">Fraud Probability</span>
+                                        <span id="fraudProb" class="value">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <span class="label">Legitimate Probability</span>
+                                        <span id="legitimateProb" class="value">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <span class="label">Confidence Score</span>
+                                        <span id="confidence" class="value">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <span class="label">Transaction Amount</span>
+                                        <span id="inputAmount" class="value">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Alert -->
+            <div id="errorAlert" class="alert alert-danger alert-dismissible fade" style="display: none; margin-top: 2rem;">
+                <strong>Error:</strong>
+                <span id="errorMessage"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.detail-item .label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.detail-item .value {
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+#fraudChart {
+    max-height: 300px;
+}
+</style>
+
+<script>
+let probabilityChart = null;
+let confidenceChart = null;
+
+// Load sample data
+document.getElementById('sampleBtn').addEventListener('click', async () => {
+    try {
+        const response = await fetch('/api/sample-data');
+        const data = await response.json();
+        
+        const sample = data.legitimate;
+        
+        document.getElementById('time').value = sample.time;
+        document.getElementById('amount').value = sample.amount;
+        document.getElementById('v1').value = sample.v1;
+        document.getElementById('v2').value = sample.v2;
+        document.getElementById('v3').value = sample.v3;
+        document.getElementById('v4').value = sample.v4;
+        document.getElementById('v5').value = sample.v5;
+        document.getElementById('v6').value = sample.v6;
+    } catch (error) {
+        showError('Failed to load sample data');
+    }
+});
+
+// Form submission
+document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Show loading state
+    const btn = e.target.querySelector('button[type="submit"]');
+    const spinner = document.getElementById('spinner');
+    btn.disabled = true;
+    spinner.style.display = 'inline-block';
+    
+    try {
+        // Gather form data
+        const formData = {
+            time: document.getElementById('time').value,
+            amount: document.getElementById('amount').value,
+            v1: document.getElementById('v1').value,
+            v2: document.getElementById('v2').value,
+            v3: document.getElementById('v3').value,
+            v4: document.getElementById('v4').value,
+            v5: document.getElementById('v5').value,
+            v6: document.getElementById('v6').value,
+        };
+        
+        // Send prediction request
+        const response = await fetch('/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            showError(result.error);
+            return;
+        }
+        
+        // Display results
+        showResults(result);
+        
+    } catch (error) {
+        showError('An error occurred: ' + error.message);
+    } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+    }
+});
+
+function showResults(result) {
+    // Update prediction display
+    const isFraud = result.is_fraud;
+    const predictionClass = isFraud ? 'danger' : 'success';
+    const predictionIcon = isFraud ? '⚠️' : '✅';
+    
+    const html = `
+        <div class="alert alert-${predictionClass} py-4">
+            <h5 class="mb-2">${predictionIcon} ${result.prediction}</h5>
+            <p class="mb-0">
+                This transaction is predicted to be ${isFraud ? 'fraudulent' : 'legitimate'} 
+                with ${result.confidence}% confidence.
+            </p>
+        </div>
+    `;
+    
+    document.getElementById('predictionDisplay').innerHTML = html;
+    
+    // Update details
+    document.getElementById('fraudProb').textContent = (result.fraud_probability * 100).toFixed(2) + '%';
+    document.getElementById('legitimateProb').textContent = (result.legitimate_probability * 100).toFixed(2) + '%';
+    document.getElementById('confidence').textContent = result.confidence.toFixed(2) + '%';
+    document.getElementById('inputAmount').textContent = '$' + parseFloat(result.input_data.amount).toFixed(2);
+    
+    // Update charts
+    updateCharts(result.fraud_probability, result.confidence);
+    
+    // Show result section
+    document.getElementById('resultSection').style.display = 'block';
+    document.getElementById('errorAlert').style.display = 'none';
+    
+    // Scroll to results
+    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function updateCharts(fraudProb, confidence) {
+    const ctx1 = document.getElementById('probabilityChart').getContext('2d');
+    const ctx2 = document.getElementById('confidenceChart').getContext('2d');
+    
+    // Destroy old charts if they exist
+    if (probabilityChart) probabilityChart.destroy();
+    if (confidenceChart) confidenceChart.destroy();
+    
+    // Fraud Probability Chart
+    probabilityChart = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+            labels: ['Fraudulent', 'Legitimate'],
+            datasets: [{
+                data: [
+                    (fraudProb * 100).toFixed(1),
+                    ((1 - fraudProb) * 100).toFixed(1)
+                ],
+                backgroundColor: ['#dc3545', '#198754'],
+                borderColor: ['#fff', '#fff'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Confidence Chart
+    confidenceChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Confidence'],
+            datasets: [{
+                label: 'Model Confidence (%)',
+                data: [confidence.toFixed(1)],
+                backgroundColor: ['#0d6efd'],
+                borderColor: ['#0d6efd'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+function showError(message) {
+    document.getElementById('errorMessage').textContent = message;
+    document.getElementById('errorAlert').style.display = 'block';
+    document.getElementById('resultSection').style.display = 'none';
+}
+</script>
+{% endblock %}

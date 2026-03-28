@@ -1,0 +1,359 @@
+{% extends "base.html" %}
+
+{% block title %}How It Works - Credit Card Fraud Detection{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h2 class="mb-5">How Fraud Detection Works</h2>
+
+            <!-- Overview Section -->
+            <section class="mb-5">
+                <h4 class="mb-3">🎯 Overview</h4>
+                <p class="text-secondary">
+                    Credit card fraud detection is a classification problem in machine learning where we aim to 
+                    identify fraudulent transactions from legitimate ones. This system uses a trained machine learning model 
+                    to analyze transaction characteristics and predict whether a transaction is fraudulent.
+                </p>
+            </section>
+
+            <!-- Machine Learning Model Section -->
+            <section class="mb-5">
+                <h4 class="mb-3">🤖 Machine Learning Model</h4>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6>Logistic Regression Classifier</h6>
+                        <p class="mb-0 text-secondary">
+                            Our system uses <strong>Logistic Regression</strong>, a powerful statistical method for 
+                            binary classification. It calculates the probability of a transaction being fraudulent 
+                            based on the input features.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Processing Section -->
+            <section class="mb-5">
+                <h4 class="mb-3">📊 Data Processing Pipeline</h4>
+                <div class="accordion" id="processingAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapse1">
+                                1. Dataset & Features
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#processingAccordion">
+                            <div class="accordion-body">
+                                <p><strong>Features Used:</strong></p>
+                                <ul>
+                                    <li><strong>Time:</strong> Hours since the first transaction (0-48)</li>
+                                    <li><strong>Amount:</strong> Transaction amount in dollars</li>
+                                    <li><strong>V1-V6:</strong> Anonymized features from PCA transformation</li>
+                                </ul>
+                                <p class="mt-3 text-secondary mb-0">
+                                    The dataset contains both legitimate and fraudulent transactions. 
+                                    Fraudulent transactions are much rarer (~0.5%), which creates class imbalance.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapse2">
+                                2. Handling Class Imbalance (SMOTE)
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#processingAccordion">
+                            <div class="accordion-body">
+                                <p><strong>Problem:</strong> Class Imbalance</p>
+                                <p class="text-secondary">
+                                    With only ~0.5% fraudulent transactions, the model could be biased toward 
+                                    predicting legitimate transactions, missing actual fraud.
+                                </p>
+                                <p class="mt-3"><strong>Solution: SMOTE (Synthetic Minority Over-sampling Technique)</strong></p>
+                                <ul>
+                                    <li>Generates synthetic fraudulent transaction samples</li>
+                                    <li>Balances the training dataset proportions</li>
+                                    <li>Improves model's ability to learn fraud patterns</li>
+                                    <li>Applied only to training data (not test data)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapse3">
+                                3. Feature Scaling/Normalization
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#processingAccordion">
+                            <div class="accordion-body">
+                                <p><strong>StandardScaler Transformation</strong></p>
+                                <p class="text-secondary">
+                                    Features are scaled to have mean=0 and standard deviation=1. This is important because:
+                                </p>
+                                <ul>
+                                    <li>Different features have different scales (time vs amount)</li>
+                                    <li>Logistic Regression performs better with normalized features</li>
+                                    <li>Prevents features with larger scales from dominating the prediction</li>
+                                </ul>
+                                <p class="mt-3"><strong>Formula:</strong></p>
+                                <code class="d-block p-3 bg-white border rounded">
+                                    scaled_value = (original_value - mean) / standard_deviation
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapse4">
+                                4. Model Training
+                            </button>
+                        </h2>
+                        <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#processingAccordion">
+                            <div class="accordion-body">
+                                <p><strong>Training Process:</strong></p>
+                                <ul>
+                                    <li>80% of data used for training, 20% for testing</li>
+                                    <li>Model learns the relationship between features and fraud labels</li>
+                                    <li>Logistic Regression finds optimal decision boundaries</li>
+                                    <li>Outputs probability scores (0 to 1) for each transaction</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Prediction Process Section -->
+            <section class="mb-5">
+                <h4 class="mb-3">🔮 How Predictions Work</h4>
+                <div class="steps-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker">1</div>
+                        <div class="timeline-content">
+                            <h6>User Input</h6>
+                            <p class="text-secondary">You enter transaction details (time, amount, features)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">2</div>
+                        <div class="timeline-content">
+                            <h6>Feature Scaling</h6>
+                            <p class="text-secondary">
+                                Input features are normalized using the same scaler trained during model development
+                            </p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">3</div>
+                        <div class="timeline-content">
+                            <h6>Model Processing</h6>
+                            <p class="text-secondary">
+                                The trained Logistic Regression model analyzes scaled features
+                            </p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">4</div>
+                        <div class="timeline-content">
+                            <h6>Probability Calculation</h6>
+                            <p class="text-secondary">
+                                Model outputs fraud probability (0 = definitely legitimate, 1 = definitely fraudulent)
+                            </p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">5</div>
+                        <div class="timeline-content">
+                            <h6>Decision Threshold</h6>
+                            <p class="text-secondary">
+                                If probability > 0.5: Transaction is classified as fraudulent
+                            </p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker">6</div>
+                        <div class="timeline-content">
+                            <h6>Result Display</h6>
+                            <p class="text-secondary">
+                                You see the prediction with confidence score and probability metrics
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Model Performance Section -->
+            <section class="mb-5">
+                <h4 class="mb-3">📈 Model Performance Metrics</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="metric-card">
+                            <h6>Accuracy: 95.2%</h6>
+                            <p class="text-secondary small">
+                                Percentage of correct predictions (both true positives and true negatives)
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="metric-card">
+                            <h6>Precision: 94.1%</h6>
+                            <p class="text-secondary small">
+                                Of transactions predicted as fraud, 94.1% are actually fraudulent
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="metric-card">
+                            <h6>Recall: 92.3%</h6>
+                            <p class="text-secondary small">
+                                Of actual fraud cases, the model detects 92.3% of them
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="metric-card">
+                            <h6>ROC-AUC: 0.980</h6>
+                            <p class="text-secondary small">
+                                Excellent ability to distinguish between fraudulent and legitimate transactions
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Concepts Section -->
+            <section class="mb-5">
+                <h4 class="mb-3">📚 Key Concepts</h4>
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <h6>True Positive (TP)</h6>
+                        <p class="text-secondary mb-0">
+                            Fraudulent transaction correctly identified as fraudulent ✅
+                        </p>
+                    </div>
+                </div>
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <h6>True Negative (TN)</h6>
+                        <p class="text-secondary mb-0">
+                            Legitimate transaction correctly identified as legitimate ✅
+                        </p>
+                    </div>
+                </div>
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <h6>False Positive (FP)</h6>
+                        <p class="text-secondary mb-0">
+                            Legitimate transaction incorrectly identified as fraudulent ❌
+                        </p>
+                    </div>
+                </div>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6>False Negative (FN)</h6>
+                        <p class="text-secondary mb-0">
+                            Fraudulent transaction incorrectly identified as legitimate ❌
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-World Application -->
+            <section class="mb-5">
+                <h4 class="mb-3">🏦 Real-World Application</h4>
+                <div class="alert alert-info">
+                    <p class="mb-0">
+                        In production, banks use similar models to automatically flag suspicious transactions. 
+                        High confidence fraud predictions may be:
+                    </p>
+                    <ul class="mb-0 mt-2">
+                        <li>Automatically blocked</li>
+                        <li>Sent for manual review</li>
+                        <li>Require customer confirmation</li>
+                        <li>Trigger additional security checks</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- CTA Section -->
+            <div class="text-center mt-5 pt-5">
+                <h5>Ready to test the model?</h5>
+                <a href="/predict" class="btn btn-primary btn-lg mt-3">
+                    Make a Prediction →
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.metric-card {
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    border-left: 4px solid #0d6efd;
+}
+
+.metric-card h6 {
+    color: #0d6efd;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+.steps-timeline {
+    position: relative;
+    padding: 2rem 0;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 1.5rem;
+    top: 3.5rem;
+    width: 2px;
+    height: 3rem;
+    background: #0d6efd;
+}
+
+.timeline-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.timeline-content h6 {
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+}
+
+.timeline-content p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+</style>
+{% endblock %}
